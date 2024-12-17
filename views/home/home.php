@@ -7,6 +7,25 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-900 text-white">
+    <?php
+    require_once __DIR__ . '/../../config/Database.php';
+
+    use config\Database;
+
+    // Conectar a la base de datos
+    $database = new Database();
+    $conn = $database->getConnection();
+
+    // Obtener las publicaciones de la base de datos
+    $sql = "SELECT id, title, content FROM posts";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+
+    $posts = [];
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $posts[] = $row;
+    }
+    ?>
     <nav class="bg-gray-800 p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
             <a class="text-xl font-bold" href="#"><span class="text-white">Chatter</span><span class="text-yellow-500">Hub</span></a>
@@ -37,6 +56,7 @@
                 <?php endforeach; ?>
             </ul>
         </section>
+       
     </div>
 </body>
 </html>
