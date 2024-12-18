@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (!isset($_SESSION['user'])) {
+    header("Location: /blog/index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,54 +16,47 @@
 <body class="bg-gray-900 text-white">
     <?php
     require_once __DIR__ . '/../../config/Database.php';
+    require_once __DIR__ . '/../../controllers/PostController.php';
+    require_once __DIR__ . '/../../models/Post.php';
 
     use config\Database;
+    use controllers\PostController;
+    use models\Post;
 
     // Conectar a la base de datos
     $database = new Database();
     $conn = $database->getConnection();
 
     // Obtener las publicaciones de la base de datos
-    $sql = "SELECT id, title, content FROM posts";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-
-    $posts = [];
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $posts[] = $row;
-    }
+    $postModel = new Post($conn);
+    $postController = new PostController($postModel);
+    $posts = $postController->getAllPosts();
     ?>
     <nav class="bg-gray-800 p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
-            <a class="text-xl font-bold" href="#"><span class="text-white">Chatter</span><span class="text-yellow-500">Hub</span></a>
+            <a class="text-xl font-bold" href="../home/home.php"><span class="text-white">Chatter</span><span class="text-yellow-500">Hub</span></a>
             <div class="flex space-x-4">
-                <a class="text-gray-300 hover:text-yellow-500" href="#">Inicio</a>
-                <a class="text-gray-300 hover:text-yellow-500" href="#">Contacto</a>
+                <a class="text-gray-300 hover:text-yellow-500" href="../home/home.php">Inicio</a>
+                <a class="text-gray-300 hover:text-yellow-500" href="../contact/contact.php">Contacto</a>
                 <a class="text-gray-300 hover:text-yellow-500" href="../Auth/logout.php">Cerrar Sesión</a>
             </div>
         </div>
     </nav>
     <div class="container mx-auto mt-10">
-        <h1 class="text-3xl font-bold mb-5">Bienvenido a ChatterHub</h1>
-        <p class="mb-5">Esta es la página de inicio de Mi Blog. Utiliza la barra de navegación para explorar el sitio.</p>
+        <h1 class="text-3xl font-bold mb-5">Bienvenido a ChatterHub, <?php echo htmlspecialchars($_SESSION['user']['username']); ?>!</h1>
+        <p class="mb-5">Esta es la página de inicio de Mi Blog.</p>
         <section>
             <h2 class="text-2xl font-bold mb-3">Publicaciones Recientes</h2>
             <ul class="list-disc pl-5">
-                <?php
-                // Asegúrate de que $recentPosts esté definido
-                if (!isset($recentPosts) || !is_array($recentPosts)) {
-                    $recentPosts = [];
-                }
-                foreach ($recentPosts as $post): ?>
-                    <li class="mb-2">
-                        <a href="/post/<?php echo $post['id']; ?>" class="text-yellow-500 hover:underline">
-                            <?php echo htmlspecialchars($post['title']); ?>
-                        </a>
+                <?php foreach ($posts as $post): ?>
+                    <h3 class="text-xl font-semibold mb-2"><?php echo htmlspecialchars($post['title']); ?></h3>
+                    <li class="mb-6 p-4 bg-gray-800 rounded-lg shadow-md">
+                        <p class="text-gray-400"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                        <small class="text-gray-500">Autor: <?php echo htmlspecialchars($post['author']); ?></small>
                     </li>
                 <?php endforeach; ?>
             </ul>
         </section>
-       
     </div>
 </body>
 </html>
