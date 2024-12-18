@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['user'])) {
+if (!isset($_SESSION['user']) || $_SESSION['user']['blocked'] == 1) {
     header("Location: /blog/index.php");
     exit();
 }
@@ -49,6 +49,10 @@ $comments = $commentController->getAllComments($chatPost['id']);
             <div class="flex space-x-4">
                 <a class="text-gray-300 hover:text-yellow-500" href="../home/home.php">Inicio</a>
                 <a class="text-gray-300 hover:text-yellow-500" href="#">Contacto</a>
+                <?php if ($_SESSION['user']['role'] == 1): ?>
+                    <a class="text-gray-300 hover:text-yellow-500" href="../contact/eliminated.php">Eliminados</a>
+                    <a class="text-gray-300 hover:text-yellow-500" href="../user/eliminated.php">Bloqueados</a>
+                <?php endif; ?>
                 <a class="text-gray-300 hover:text-yellow-500" href="../Auth/logout.php">Cerrar Sesión</a>
             </div>
         </div>

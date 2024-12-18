@@ -6,28 +6,28 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 1 || $_SESSION['us
 }
 
 require_once __DIR__ . '/../../config/Database.php';
-require_once __DIR__ . '/../../models/EliminatedComments.php';
+require_once __DIR__ . '/../../models/User.php';
 
 use config\Database;
-use models\EliminatedComments;
+use models\User;
 
 // Conectar a la base de datos
 $database = new Database();
 $conn = $database->getConnection();
 
-// Obtener todos los comentarios eliminados
-$eliminatedCommentsModel = new EliminatedComments($conn);
-$query = "SELECT * FROM deleted_comments ORDER BY deleted_at DESC";
+// Obtener todos los usuarios bloqueados
+$userModel = new User($conn);
+$query = "SELECT * FROM users WHERE blocked = 1 ORDER BY id DESC";
 $stmt = $conn->prepare($query);
 $stmt->execute();
-$deletedComments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$blockedUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comentarios Eliminados</title>
+    <title>Usuarios Bloqueados</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-900 text-white">
@@ -46,17 +46,19 @@ $deletedComments = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </nav>
     <div class="container mx-auto mt-10">
-        <h1 class="text-3xl font-bold mb-5">Comentarios Eliminados</h1>
+        <h1 class="text-3xl font-bold mb-5">Usuarios Bloqueados</h1>
         <section>
-            <h2 class="text-2xl font-bold mb-3">Historial de Comentarios Eliminados</h2>
+            <h2 class="text-2xl font-bold mb-3">Lista de Usuarios Bloqueados</h2>
             <ul class="list-disc pl-5">
-                <?php foreach ($deletedComments as $comment): ?>
+                <?php foreach ($blockedUsers as $user): ?>
                     <div class="mb-6 p-4 bg-gray-800 rounded-lg shadow-md">
-                        <p class="text-white-400"><?php echo nl2br(htmlspecialchars($comment['content'])); ?></p>
-                        <small class="text-gray-500">Usuario ID: <?php echo htmlspecialchars($comment['user_id']); ?> | Fecha de Creación: <?php echo htmlspecialchars($comment['created_at']); ?> | Fecha de Eliminación: <?php echo htmlspecialchars($comment['deleted_at']); ?></small>
-                        <form method="POST" action="block_user.php" class="mt-2">
-                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($comment['user_id']); ?>">
-                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded">Bloquear Usuario</button>
+                        <p class="text-white-400">ID: <?php echo htmlspecialchars($user['id']); ?></p>
+                        <p class="text-white-400">Nombre: <?php echo htmlspecialchars($user['username']); ?></p>
+                        <p class="text-white-400">Email: <?php echo htmlspecialchars($user['email']); ?></p>
+                        <p class="text-white-400">Fecha de Registro: <?php echo htmlspecialchars($user['created_at']); ?></p>
+                        <form method="POST" action="unblock_user.php" class="mt-2">
+                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['id']); ?>">
+                            <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded">Desbloquear Usuario</button>
                         </form>
                     </div>
                 <?php endforeach; ?>

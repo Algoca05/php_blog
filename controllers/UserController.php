@@ -31,13 +31,17 @@ class UserController {
         $email = $_POST['email'];
         $password = $_POST['password'];
         $user = $this->userModel->getUserByEmail($email);
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user'] = $user;
-            header("Location: /blog/views/home/home.php");
-            exit();
-        } else {
-            echo "Correo electrónico o contraseña incorrectos.";
+        if ($user) {
+            if ($user['blocked'] == 1) {
+                return ["blocked" => "Tu cuenta ha sido bloqueada. Por favor, contacta al administrador."];
+            }
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user'] = $user;
+                header("Location: /blog/views/home/home.php");
+                exit();
+            }
         }
+        return ["Correo electrónico o contraseña incorrectos."];
     }
 
     public function logout() {
