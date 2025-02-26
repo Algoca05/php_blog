@@ -43,21 +43,23 @@ $comments = $commentController->getAllComments($chatPost['id']);
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-900 text-white">
-    <nav class="bg-gray-800 p-4 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <a class="text-xl font-bold" href="../home/home.php"><span class="text-white">Chatter</span><span class="text-yellow-500">Hub</span></a>
-            <div class="flex space-x-4">
+<div class="flex">
+
+<nav class="bg-gray-800 w-64 min-h-screen p-4 shadow-md fixed">
+            <div class="flex flex-col space-y-4">
+                <a class="text-xl font-bold" href="../home/home.php"><span class="text-white">Chatter</span><span class="text-yellow-500">Hub</span></a>
                 <a class="text-gray-300 hover:text-yellow-500" href="../home/home.php">Inicio</a>
-                <a class="text-gray-300 hover:text-yellow-500" href="#">Contacto</a>
+                <a class="text-gray-300 hover:text-yellow-500" href="../contact/contact.php">Contacto</a>
+                <a class="text-gray-300 hover:text-yellow-500" href="../user/profile.php">Perfil</a> 
+                <a class="text-gray-300 hover:text-yellow-500" href="../post/create_post.php">Crear Post</a>
                 <?php if ($_SESSION['user']['role'] == 1): ?>
                     <a class="text-gray-300 hover:text-yellow-500" href="../contact/eliminated.php">Eliminados</a>
                     <a class="text-gray-300 hover:text-yellow-500" href="../user/eliminated.php">Bloqueados</a>
                 <?php endif; ?>
                 <a class="text-gray-300 hover:text-yellow-500" href="../Auth/logout.php">Cerrar Sesión</a>
             </div>
-        </div>
-    </nav>
-    <div class="container mx-auto mt-10">
+        </nav>
+    <div class="ml-64 container mx-auto mt-10 px-4">
         <h1 class="text-3xl font-bold mb-5">Chat de la Comunidad</h1>
         <div class="mb-5">
             <form id="commentForm">
@@ -80,6 +82,8 @@ $comments = $commentController->getAllComments($chatPost['id']);
             </ul>
         </section>
     </div>
+    </div>
+
     <script>
         document.getElementById('commentForm').addEventListener('submit', async function(event) {
             event.preventDefault();

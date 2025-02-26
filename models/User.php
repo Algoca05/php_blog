@@ -45,5 +45,39 @@ class User {
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function getUserById($id) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+
+        // sanitize
+        $id = htmlspecialchars(strip_tags($id));
+
+        // bind value
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateUser($id, $username, $email) {
+        $query = "UPDATE " . $this->table_name . " SET username = :username, email = :email WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+
+        // sanitize
+        $username = htmlspecialchars(strip_tags($username));
+        $email = htmlspecialchars(strip_tags($email));
+        $id = htmlspecialchars(strip_tags($id));
+
+        // bind values
+        $stmt->bindParam(":username", $username);
+        $stmt->bindParam(":email", $email);
+        $stmt->bindParam(":id", $id);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
 }
 ?>

@@ -2,6 +2,11 @@
 namespace controllers;
 
 use models\Post;
+use config\Database;
+
+
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../models/Post.php';
 
 class PostController {
     private $postModel;
@@ -10,8 +15,17 @@ class PostController {
         $this->postModel = $post;
     }
 
-    public function create($title, $content) {
-        return $this->postModel->create($title, $content);
+    public function create() {
+        $title = $_POST['title'];
+        $content = $_POST['content'];
+        $author_id = $_SESSION['user']['id'];
+
+        if ($this->postModel->create($title, $content, $author_id)) {
+            header("Location: /blog/views/home/home.php");
+            exit();
+        } else {
+            echo "Error creating post.";
+        }
     }
 
     public function read($id) {
@@ -38,3 +52,19 @@ class PostController {
         return $posts;
     }
 }
+
+// Handle action parameter
+if (isset($_GET['action'])) {
+    $database = new Database();
+    $conn = $database->getConnection();
+    $postModel = new Post($conn);
+    $postController = new PostController($postModel);
+
+    $action = $_GET['action'];
+    if (method_exists($postController, $action)) {
+        $postController->$action();
+    } else {
+        echo "Invalid action.";
+    }
+}
+?>

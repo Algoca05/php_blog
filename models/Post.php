@@ -14,11 +14,12 @@ class Post {
     }
 
     // Create a new post
-    public function create($title, $content) {
-        $query = "INSERT INTO posts (title, content) VALUES (:title, :content)";
+    public function create($title, $content, $author_id) {
+        $query = "INSERT INTO posts (title, content, author_id) VALUES (:title, :content, :author_id)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':title', $title);
         $stmt->bindParam(':content', $content);
+        $stmt->bindParam(':author_id', $author_id);
         if ($stmt->execute()) {
             return true;
         }

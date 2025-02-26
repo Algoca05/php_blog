@@ -1,7 +1,7 @@
 <?php
 require_once '../../autoload.php';
 
-use config\Database; // Add this line to import the Database class
+use config\Database;
 use models\User;
 use controllers\UserController;
 
@@ -11,6 +11,10 @@ $userController = new UserController(new User($db)); // Pass the database connec
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = $userController->login(); // Capture errors from the login method
+    if (isset($errors['blocked'])) {
+        header('Location: /blog/views/Auth/blocked.php');
+        exit;
+    }
 }
 ?>
 <!DOCTYPE html>
