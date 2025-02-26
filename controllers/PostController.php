@@ -4,6 +4,9 @@ namespace controllers;
 use models\Post;
 use config\Database;
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/Post.php';
@@ -16,10 +19,13 @@ class PostController {
     }
 
     public function create() {
-        $title = $_POST['title'];
-        $content = $_POST['content'];
-        $author_id = $_SESSION['user']['id'];
-
+        $title = $_POST['title'] ?? '';
+        $content = $_POST['content'] ?? '';
+        // Updated: Retrieve user id from the session "user" key.
+        $author_id = $_SESSION['user']['id'] ?? null;
+        if (!$author_id) {
+            die('User not logged in.');
+        }
         if ($this->postModel->create($title, $content, $author_id)) {
             header("Location: /blog/views/home/home.php");
             exit();

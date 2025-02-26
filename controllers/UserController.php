@@ -4,7 +4,9 @@ namespace controllers;
 use models\User;
 use config\Database;
 
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 class UserController {
     private $userModel;
